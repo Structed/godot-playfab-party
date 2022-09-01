@@ -3,6 +3,8 @@ The PlayFabParty SDK for Godot!
 
 This repo is a currently in planning state and cannot be used in Godot as of now. Please watch the repo for news!
 
+In the meantime, check out [godot-playfab](godot-playfab) - the GDscript native base SDK for PlayFab for Godot!
+
 # Hackathon 2022
 `godot-playfab-party` will be a project created during the Microsoft Global Hackathon 2022 - the worlds largest hackathon!
 
