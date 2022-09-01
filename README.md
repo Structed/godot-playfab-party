@@ -1,4 +1,6 @@
 # godot-playfab-party
+![Godot PlayFab Logo](icon.png)
+
 The PlayFabParty SDK for Godot!
 
 
