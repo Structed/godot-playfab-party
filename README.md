@@ -1,5 +1,6 @@
 # godot-playfab-party
 The PlayFabParty SDK for Godot!
+![Godot PlayFab Logo](logo.png)
 
 
 This repo is a currently in planning state and cannot be used in Godot as of now. Please watch the repo for news!
