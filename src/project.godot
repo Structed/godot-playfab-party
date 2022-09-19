@@ -11,7 +11,8 @@ config_version=5
 [application]
 
 config/name="godot-playfab-party"
-config/features=PackedStringArray("4.0", "Vulkan Mobile")
+run/main_scene="res://Scenes/Main.tscn"
+config/features=PackedStringArray("4.0", "C#", "Vulkan Mobile")
 config/icon="res://icon.svg"
 
 [dotnet]
