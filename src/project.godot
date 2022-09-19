@@ -18,6 +18,10 @@ config/icon="res://icon.svg"
 
 project/assembly_name="godot-playfab-party"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot-playfab/plugin.cfg")
+
 [rendering]
 
 vulkan/rendering/back_end=1
