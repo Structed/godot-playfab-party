@@ -8,6 +8,16 @@
 
 config_version=5
 
+_global_script_classes=[{
+"base": "Object",
+"class": &"PlayFabConstants",
+"language": &"GDScript",
+"path": "res://addons/godot-playfab/Scripts/PlayFabConstants.gd"
+}]
+_global_script_class_icons={
+"PlayFabConstants": ""
+}
+
 [application]
 
 config/name="godot-playfab-party"

@@ -16,19 +16,20 @@ layout_mode = 0
 offset_right = 437.0
 offset_bottom = 40.0
 
-[node name="TitleIdLabel" type="Label" parent="TitleIdContainer"]
+[node name="Label" type="Label" parent="TitleIdContainer"]
 layout_mode = 2
 offset_top = 2.0
-offset_right = 63.0
+offset_right = 59.0
 offset_bottom = 28.0
-text = "Title ID: "
+text = "Title ID:"
 
 [node name="TitleIdLineEdit" type="LineEdit" parent="TitleIdContainer"]
 layout_mode = 2
-offset_left = 67.0
-offset_right = 134.0
+offset_left = 63.0
+offset_right = 130.0
 offset_bottom = 31.0
-tooltip_text = "Get the Title ID from the PlayFab GameManager"
+tooltip_text = "Get the Title ID from the PlayFab GameManager.
+Will be saved automatically to the ProjectSettings."
 placeholder_text = "Title ID"
 
 [connection signal="text_changed" from="TitleIdContainer/TitleIdLineEdit" to="." method="_on_title_id_line_edit_text_changed"]

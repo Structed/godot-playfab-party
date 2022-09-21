@@ -1,8 +1,5 @@
 #if TOOLS
 using Godot;
-using System;
-using Godot.Collections;
-using godotplayfabparty.Scripts;
 
 [Tool]
 public partial class Plugin : EditorPlugin
@@ -11,16 +8,6 @@ public partial class Plugin : EditorPlugin
 	private Node mainPanelInstance;
 	public Plugin()
 	{
-		this.AddCustomProjectSetting(PlayFabConstants.SETTING_PLAYFAB_TITLE_ID, "", Variant.Type.String, PropertyHint.PlaceholderText, "Retrieve from PlayFab Game Manager");
-		Error error = ProjectSettings.Save();
-		if (error != Error.Ok)
-		{
-			// TODO decide between exception and push error
-			var message = $"Encountered error {Enum.GetName(error)} when saving project settings.";
-			GD.PushError(message);
-			throw new Exception(message);
-		}
-
 		this.mainPanel = GD.Load<PackedScene>("res://addons/godot-playfab/Scenes/Editor/EditorMain.tscn");
 	}
 
@@ -63,24 +50,6 @@ public partial class Plugin : EditorPlugin
 	public override Texture2D _GetPluginIcon()
 	{
 		return GD.Load<Texture2D>("res://icon_16x16.png");
-	}
-
-	private void AddCustomProjectSetting(string name, string defaultValue, Variant.Type type, PropertyHint propertyHint, string hintText = "")
-	{
-		if (ProjectSettings.HasSetting(name))
-		{
-			return;
-		}
-
-		var propertyInfo = new Dictionary();
-		propertyInfo.Add("name", name);
-		propertyInfo.Add("type", Enum.GetName(type));
-		propertyInfo.Add("hint", Enum.GetName(propertyHint));
-		propertyInfo.Add("hint_string", hintText);
-
-		ProjectSettings.SetSetting(name, defaultValue);
-		ProjectSettings.AddPropertyInfo(propertyInfo);
-		ProjectSettings.SetInitialValue(name, defaultValue);
 	}
 }
 #endif
