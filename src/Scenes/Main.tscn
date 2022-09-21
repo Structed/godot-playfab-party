@@ -1,10 +1,49 @@
-[gd_scene load_steps=2 format=3 uid="uid://cavku3i0jafh8"]
+[gd_scene load_steps=2 format=3 uid="uid://cl0i1slrumklb"]
 
-[ext_resource type="Script" path="res://Scripts/Main.cs" id="1_ddehe"]
+[ext_resource type="Script" path="res://Scenes/Main.gd" id="1"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource("1_ddehe")
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Main" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -232.5
+offset_top = -46.0
+offset_right = 232.5
+offset_bottom = 46.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Register" type="Button" parent="Main"]
+layout_mode = 2
+offset_right = 230.0
+offset_bottom = 92.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Register"
+
+[node name="Login" type="Button" parent="Main"]
+layout_mode = 2
+offset_left = 234.0
+offset_right = 465.0
+offset_bottom = 92.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Login"
+
+[connection signal="pressed" from="Main/Register" to="Main" method="_on_Register_pressed"]
+[connection signal="pressed" from="Main/Login" to="Main" method="_on_Login_pressed"]

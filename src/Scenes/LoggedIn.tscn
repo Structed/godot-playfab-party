@@ -1,0 +1,193 @@
+[gd_scene load_steps=2 format=3 uid="uid://bhwj6tr7i2dxe"]
+
+[ext_resource type="Script" path="res://Scenes/LoggedIn.gd" id="1"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="LoginResultContainer" type="VBoxContainer" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+offset_right = 1024.0
+offset_bottom = 192.0
+
+[node name="AccountPlayerId" type="HBoxContainer" parent="VBoxContainer/LoginResultContainer"]
+layout_mode = 2
+offset_right = 1024.0
+offset_bottom = 24.0
+
+[node name="Label" type="Label" parent="VBoxContainer/LoginResultContainer/AccountPlayerId"]
+layout_mode = 2
+offset_top = 5.0
+offset_right = 263.0
+offset_bottom = 19.0
+text = "login_result.PlayFabId (Account Player Id)"
+
+[node name="Edit" type="LineEdit" parent="VBoxContainer/LoginResultContainer/AccountPlayerId"]
+layout_mode = 2
+offset_left = 267.0
+offset_right = 1024.0
+offset_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="TitlePlayerId" type="HBoxContainer" parent="VBoxContainer/LoginResultContainer"]
+layout_mode = 2
+offset_top = 28.0
+offset_right = 1024.0
+offset_bottom = 52.0
+
+[node name="Label" type="Label" parent="VBoxContainer/LoginResultContainer/TitlePlayerId"]
+layout_mode = 2
+offset_top = 5.0
+offset_right = 566.0
+offset_bottom = 19.0
+text = "login_result.InfoResultPayload.AccountInfo.TitleInfo.TitlePlayerAccount.Id(Title Player Id)"
+
+[node name="Edit" type="LineEdit" parent="VBoxContainer/LoginResultContainer/TitlePlayerId"]
+layout_mode = 2
+offset_left = 570.0
+offset_right = 1024.0
+offset_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="TitlePlayerName" type="HBoxContainer" parent="VBoxContainer/LoginResultContainer"]
+layout_mode = 2
+offset_top = 56.0
+offset_right = 1024.0
+offset_bottom = 80.0
+
+[node name="Label" type="Label" parent="VBoxContainer/LoginResultContainer/TitlePlayerName"]
+layout_mode = 2
+offset_top = 5.0
+offset_right = 544.0
+offset_bottom = 19.0
+text = "login_result.InfoResultPayload.AccountInfo.TitleInfo.DisplayName (Title Player Name)"
+
+[node name="Edit" type="LineEdit" parent="VBoxContainer/LoginResultContainer/TitlePlayerName"]
+layout_mode = 2
+offset_left = 548.0
+offset_right = 1024.0
+offset_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="SessionTicket" type="HBoxContainer" parent="VBoxContainer/LoginResultContainer"]
+layout_mode = 2
+offset_top = 84.0
+offset_right = 1024.0
+offset_bottom = 108.0
+
+[node name="Label" type="Label" parent="VBoxContainer/LoginResultContainer/SessionTicket"]
+layout_mode = 2
+offset_top = 5.0
+offset_right = 165.0
+offset_bottom = 19.0
+text = "login_result.SessionTicket"
+
+[node name="Edit" type="LineEdit" parent="VBoxContainer/LoginResultContainer/SessionTicket"]
+layout_mode = 2
+offset_left = 169.0
+offset_right = 1024.0
+offset_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="EntityToken" type="HBoxContainer" parent="VBoxContainer/LoginResultContainer"]
+layout_mode = 2
+offset_top = 112.0
+offset_right = 1024.0
+offset_bottom = 136.0
+
+[node name="Label" type="Label" parent="VBoxContainer/LoginResultContainer/EntityToken"]
+layout_mode = 2
+offset_top = 5.0
+offset_right = 230.0
+offset_bottom = 19.0
+text = "login_result.EntityToken.EntityToken"
+
+[node name="Edit" type="LineEdit" parent="VBoxContainer/LoginResultContainer/EntityToken"]
+layout_mode = 2
+offset_left = 234.0
+offset_right = 1024.0
+offset_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="EntityType" type="HBoxContainer" parent="VBoxContainer/LoginResultContainer"]
+layout_mode = 2
+offset_top = 140.0
+offset_right = 1024.0
+offset_bottom = 164.0
+
+[node name="Label" type="Label" parent="VBoxContainer/LoginResultContainer/EntityType"]
+layout_mode = 2
+offset_top = 5.0
+offset_right = 226.0
+offset_bottom = 19.0
+text = "login_result.EntityToken.Entity.Type"
+
+[node name="Edit" type="LineEdit" parent="VBoxContainer/LoginResultContainer/EntityType"]
+layout_mode = 2
+offset_left = 230.0
+offset_right = 1024.0
+offset_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="EntityId" type="HBoxContainer" parent="VBoxContainer/LoginResultContainer"]
+layout_mode = 2
+offset_top = 168.0
+offset_right = 1024.0
+offset_bottom = 192.0
+
+[node name="Label" type="Label" parent="VBoxContainer/LoginResultContainer/EntityId"]
+layout_mode = 2
+offset_top = 5.0
+offset_right = 209.0
+offset_bottom = 19.0
+text = "login_result.EntityToken.Entity.Id"
+
+[node name="Edit" type="LineEdit" parent="VBoxContainer/LoginResultContainer/EntityId"]
+layout_mode = 2
+offset_left = 213.0
+offset_right = 1024.0
+offset_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="CreatePartyNetworkButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+offset_right = 1152.0
+offset_bottom = 31.0
+text = "Create a party network"
+
+[node name="TestChatButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+offset_top = 35.0
+offset_right = 1152.0
+offset_bottom = 66.0
+text = "Test chat"
+
+[node name="SoundDeviceButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+offset_top = 70.0
+offset_right = 1152.0
+offset_bottom = 101.0
+text = "Manage sound device"
+
+[node name="Response" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+offset_top = 105.0
+offset_right = 1152.0
+offset_bottom = 648.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[connection signal="pressed" from="VBoxContainer/CreatePartyNetworkButton" to="." method="_on_GetTitleDataButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/TestChatButton" to="." method="_on_EventsPlayStream_pressed"]
+[connection signal="pressed" from="VBoxContainer/SoundDeviceButton" to="." method="_on_RequestBuilder_pressed"]

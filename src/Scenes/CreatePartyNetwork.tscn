@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://du4e4lm8saqgq"]
+
+[node name="CreatePartyNetwork" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 731.0
+offset_bottom = 558.0
+
+[node name="NetworkName" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+offset_right = 731.0
+offset_bottom = 31.0
+
+[node name="Label" type="Label" parent="VBoxContainer/NetworkName"]
+layout_mode = 2
+offset_top = 2.0
+offset_right = 47.0
+offset_bottom = 28.0
+text = "Name"
+
+[node name="Edit" type="LineEdit" parent="VBoxContainer/NetworkName"]
+layout_mode = 2
+offset_left = 51.0
+offset_right = 118.0
+offset_bottom = 31.0
+
+[node name="Create" type="Button" parent="VBoxContainer/NetworkName"]
+layout_mode = 2
+offset_left = 122.0
+offset_right = 182.0
+offset_bottom = 31.0
+text = "Create"
+
+[node name="ChatBox" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+offset_top = 35.0
+offset_right = 731.0
+offset_bottom = 470.0
+
+[node name="ChatStream" type="RichTextLabel" parent="VBoxContainer/ChatBox"]
+custom_minimum_size = Vector2i(400, 400)
+layout_mode = 2
+offset_right = 731.0
+offset_bottom = 400.0
+text = "Chat message streaming here"
+
+[node name="MessageSend" type="HBoxContainer" parent="VBoxContainer/ChatBox"]
+layout_mode = 2
+offset_top = 404.0
+offset_right = 731.0
+offset_bottom = 435.0
+
+[node name="Message" type="TextEdit" parent="VBoxContainer/ChatBox/MessageSend"]
+custom_minimum_size = Vector2i(400, 0)
+layout_mode = 2
+offset_right = 400.0
+offset_bottom = 31.0
+placeholder_text = "Here your message"
+
+[node name="Send" type="Button" parent="VBoxContainer/ChatBox/MessageSend"]
+layout_mode = 2
+offset_left = 404.0
+offset_right = 451.0
+offset_bottom = 31.0
+text = "Send"

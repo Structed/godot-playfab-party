@@ -8,12 +8,26 @@
 
 config_version=5
 
+_global_script_classes=[{
+"base": "Control",
+"class": &"LoggedIn",
+"language": &"GDScript",
+"path": "res://Scenes/LoggedIn.gd"
+}]
+_global_script_class_icons={
+"LoggedIn": ""
+}
+
 [application]
 
 config/name="godot-playfab-party"
 run/main_scene="res://Scenes/Main.tscn"
 config/features=PackedStringArray("4.0", "C#", "Vulkan Mobile")
 config/icon="res://icon.svg"
+
+[autoload]
+
+SceneManager="*res://Scripts/SceneManager.gd"
 
 [dotnet]
 
