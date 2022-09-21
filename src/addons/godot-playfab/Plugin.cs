@@ -7,7 +7,7 @@ using godotplayfabparty.Scripts;
 [Tool]
 public partial class Plugin : EditorPlugin
 {
-private readonly PackedScene mainPanel;
+	private readonly PackedScene mainPanel;
 	private Node mainPanelInstance;
 	public Plugin()
 	{
@@ -21,7 +21,7 @@ private readonly PackedScene mainPanel;
 			throw new Exception(message);
 		}
 
-		this.mainPanel = GD.Load<PackedScene>("res://Scenes/Editor/EditorMain.tscn");
+		this.mainPanel = GD.Load<PackedScene>("res://addons/godot-playfab/Scenes/Editor/EditorMain.tscn");
 	}
 
 	public override void _EnterTree()
@@ -32,14 +32,14 @@ private readonly PackedScene mainPanel;
 		this.mainPanelInstance = mainPanel.Instantiate();
 		// Add the main panel to the editor's main viewport.
 
-		GetEditorInterface().GetViewport().AddChild(mainPanelInstance);
+		GetEditorInterface().GetEditorMainScreen().AddChild(mainPanelInstance);
 		// Hide the main panel. Very much required.
 		_MakeVisible(false);
 	}
 
 	public override void _ExitTree()
 	{
-		// Clean-up of the plugin goes here.
+		mainPanelInstance?.QueueFree();
 	}
 
 	public override bool _HasMainScreen()
@@ -51,7 +51,7 @@ private readonly PackedScene mainPanel;
 	{
 		if (mainPanel != null)
 		{
-			mainPanelInstance.QueueFree();
+			(mainPanelInstance as Control).Visible = visible;
 		}
 	}
 
