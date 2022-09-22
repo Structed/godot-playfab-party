@@ -1,11 +1,13 @@
 #if TOOLS
 using Godot;
+using PlayFab;
 
 [Tool]
 public partial class Plugin : EditorPlugin
 {
 	private readonly PackedScene mainPanel;
 	private Node mainPanelInstance;
+	private PlayFab.PlayFabClientInstanceAPI playFabClientInstanceApi;
 	public Plugin()
 	{
 		this.mainPanel = GD.Load<PackedScene>("res://addons/godot-playfab/Scenes/Editor/EditorMain.tscn");

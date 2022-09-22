@@ -13,9 +13,15 @@ _global_script_classes=[{
 "class": &"PlayFabConstants",
 "language": &"GDScript",
 "path": "res://addons/godot-playfab/Scripts/PlayFabConstants.gd"
+}, {
+"base": "Object",
+"class": &"test",
+"language": &"GDScript",
+"path": "res://addons/godot-playfab/Scripts/test.gd"
 }]
 _global_script_class_icons={
-"PlayFabConstants": ""
+"PlayFabConstants": "",
+"test": ""
 }
 
 [application]
@@ -31,7 +37,7 @@ project/assembly_name="godot-playfab-party"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot-playfab/plugin.cfg")
+enabled=PackedStringArray()
 
 [rendering]
 
