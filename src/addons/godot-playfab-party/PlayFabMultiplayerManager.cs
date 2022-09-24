@@ -179,7 +179,7 @@ namespace PlayFab.Party
                 }
                 PlayFabEventTracer.instance.DoWork();
             }
-            
+
             if(HasTasks())
             {
                 ProcessTask();
@@ -2584,7 +2584,7 @@ namespace PlayFab.Party
             // Used to determine whether task is executable.
             // If Begin() returns false, the task will not run.
             public abstract bool Begin();
-            // Return true if the task is done. 
+            // Return true if the task is done.
             public abstract bool Run();
             // Cleanup the task.
             public abstract void End();
