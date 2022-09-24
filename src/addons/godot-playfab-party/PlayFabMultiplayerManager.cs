@@ -36,7 +36,9 @@ using PartyCSharpSDK;
 using PartyXBLCSharpSDK;
 using PlayFab.ClientModels;
 using PlayFab.Party._Internal;
+#if UNITY_2019_1_OR_NEWER
 using UnityEngine;
+#endif
 #if UNITY_EDITOR
 using UnityEditor.Compilation;
 using UnityEditor;
@@ -47,7 +49,11 @@ namespace PlayFab.Party
     /// <summary>
     /// The primary class for the PlayFab Party APIs.
     /// </summary>
+    #if UNITY_2019_1_OR_NEWER
     public partial class PlayFabMultiplayerManager : MonoBehaviour
+    #else
+    public partial class PlayFabMultiplayerManager
+    #endif
     {
         // Private variables
         private static PlayFabMultiplayerManager _multiplayerManager;
