@@ -50,14 +50,18 @@ namespace PlayFab.Party
     /// <summary>
     /// The primary class for the PlayFab Party APIs.
     /// </summary>
-    #if UNITY_2019_1_OR_NEWER
-    public partial class PlayFabMultiplayerManager : MonoBehaviour
+    #if GODOT
+    public partial class PlayFabMultiplayerManager : Node
     #else
-    public partial class PlayFabMultiplayerManager
+    public partial class PlayFabMultiplayerManager : MonoBehaviour
     #endif
     {
         // Private variables
+        #if GODOT
+        private readonly PlayFabEventTracer eventTracer;
+        #else
         private static PlayFabMultiplayerManager _multiplayerManager;
+        #endif
         private static LogLevelType _logLevel;
         private static bool _logLevelSetByUser;
 
@@ -135,6 +139,46 @@ namespace PlayFab.Party
 
         private bool gameObjectPersisted = false;
 
+        #if GODOT
+        public PlayFabMultiplayerManager()
+        {
+            eventTracer = new PlayFabEventTracer();
+        }
+        public override void _Ready()
+        {
+            base._Ready();
+            _Initialize();
+        }
+
+        public override void _ExitTree()
+        {
+            _CleanUp();
+            base._ExitTree();
+        }
+
+        public override void _Process(double delta)
+        {
+            if (_playFabMultiplayerManagerState >= _InternalPlayFabMultiplayerManagerState.Initialized)
+            {
+                ProcessQueuedOperations();
+                ProcessStateChanges();
+                if (_platformPolicyProvider != null)
+                {
+                    _platformPolicyProvider.ProcessStateChanges();
+                }
+                #if GODOT
+                this.eventTracer.DoWork();
+#else
+                PlayFabEventTracer.instance.DoWork();
+#endif
+            }
+
+            if(HasTasks())
+            {
+                ProcessTask();
+            }
+        }
+#else
         private void Awake()
         {
 #if UNITY_EDITOR && UNITY_2019_1_OR_NEWER
@@ -213,6 +257,8 @@ namespace PlayFab.Party
 
             return _multiplayerManager;
         }
+        #endif
+
 
         //
         // Properties
@@ -604,12 +650,12 @@ namespace PlayFab.Party
             }
         }
 
-        internal static void _LogError(uint code)
+        internal void _LogError(uint code)
         {
             _LogError(code, PlayFabMultiplayerManagerErrorType.Error);
         }
 
-        internal static void _LogError(uint code, PlayFabMultiplayerManagerErrorType type)
+        internal void _LogError(uint code, PlayFabMultiplayerManagerErrorType type)
         {
             string errorMessage = string.Empty;
             uint getErrorCodeError = SDK.PartyGetErrorMessage(code, out errorMessage);
@@ -617,19 +663,31 @@ namespace PlayFab.Party
             {
                 errorMessage = "Unknown error.";
             }
+            #if GODOT
+            var playFabMultiplayerManager = this;
+            #else
             PlayFabMultiplayerManager playFabMultiplayerManager = Get();
+            #endif
             if (playFabMultiplayerManager.OnError != null)
             {
                 PlayFabMultiplayerManagerErrorArgs args = new PlayFabMultiplayerManagerErrorArgs((int)code, errorMessage, type);
                 playFabMultiplayerManager.OnError(playFabMultiplayerManager, args);
             }
+            #if GODOT
+            this.eventTracer.OnPlayFabPartyError(code, type);
+            #else
             PlayFabEventTracer.instance.OnPlayFabPartyError(code, type);
+            #endif
             _LogError(errorMessage);
         }
 
-        internal static void _LogError(uint code, string message, PlayFabMultiplayerManagerErrorArgs args)
+        internal void _LogError(uint code, string message, PlayFabMultiplayerManagerErrorArgs args)
         {
+#if GODOT
+            var playFabMultiplayerManager = this;
+#else
             PlayFabMultiplayerManager playFabMultiplayerManager = Get();
+#endif
             if (playFabMultiplayerManager.OnError != null)
             {
                 playFabMultiplayerManager.OnError(playFabMultiplayerManager, args);
@@ -782,7 +840,7 @@ namespace PlayFab.Party
             CleanUpImpl();
         }
 
-        private void InitializeImpl()
+        private async Task InitializeImpl()
         {
             if (_playFabMultiplayerManagerState > _InternalPlayFabMultiplayerManagerState.NotInitialized)
             {
@@ -872,7 +930,12 @@ namespace PlayFab.Party
                 }
 #endif
             }
+
+            #if GODOT
+            await this.eventTracer.OnPlayFabMultiPlayerManagerInitialize();
+            #else
             PlayFabEventTracer.instance.OnPlayFabMultiPlayerManagerInitialize();
+            #endif
         }
 
         private void CleanUpImpl()
@@ -2536,7 +2599,11 @@ namespace PlayFab.Party
             GD.Print("ResetParty");
             _tasks.Clear();
             _runningTask = null;
+            #if GODOT
+            var mpManager = this;
+            #else
             var mpManager = PlayFabMultiplayerManager.Get();
+            #endif
             if(mpManager.IsNotInitializedState() || mpManager.IsPendingInitializationState())
             {
                 GD.Print("No reinitialization required.");
@@ -2544,13 +2611,13 @@ namespace PlayFab.Party
             }
             if(_networkId != null && mpManager.IsConnectedToNetworkState())
             {
-                AddTask(new LeaveNetworkTask());
+                AddTask(new LeaveNetworkTask(this));
             }
-            AddTask(new CleanPartyTask());
-            AddTask(new InitPartyTask());
+            AddTask(new CleanPartyTask(this));
+            AddTask(new InitPartyTask(this));
             if(_networkId != null && mpManager.IsConnectedToNetworkState())
             {
-                AddTask(new JoinPartyTask(_networkId));
+                AddTask(new JoinPartyTask(_networkId, this));
             }
         }
 
@@ -2581,6 +2648,13 @@ namespace PlayFab.Party
 
         private abstract class WorkTask
         {
+            protected readonly PlayFabMultiplayerManager mpManager;
+
+            protected WorkTask(PlayFabMultiplayerManager mpManager)
+            {
+                this.mpManager = mpManager;
+            }
+
             // Used to determine whether task is executable.
             // If Begin() returns false, the task will not run.
             public abstract bool Begin();
@@ -2592,10 +2666,13 @@ namespace PlayFab.Party
 
         private class LeaveNetworkTask : WorkTask
         {
+            public LeaveNetworkTask(PlayFabMultiplayerManager mpManager) : base(mpManager)
+            {
+            }
+
             public override bool Begin()
             {
                 GD.Print("Task: LeaveNetworkTask");
-                var mpManager = PlayFabMultiplayerManager.Get();
                 if(mpManager.IsConnectedToNetworkState())
                 {
                     mpManager.LeaveNetwork();
@@ -2609,7 +2686,6 @@ namespace PlayFab.Party
 
             public override bool Run()
             {
-                var mpManager = PlayFabMultiplayerManager.Get();
                 if(!mpManager.IsConnectedToNetworkState())
                 {
                     return true;
@@ -2624,10 +2700,13 @@ namespace PlayFab.Party
 
         private class CleanPartyTask : WorkTask
         {
+            public CleanPartyTask(PlayFabMultiplayerManager mpManager) : base(mpManager)
+            {
+            }
+
             public override bool Begin()
             {
                 GD.Print("Task: CleanPartyTask");
-                var mpManager = PlayFabMultiplayerManager.Get();
                 if(!mpManager.IsNotInitializedState())
                 {
                     mpManager._CleanUp();
@@ -2637,7 +2716,6 @@ namespace PlayFab.Party
 
             public override bool Run()
             {
-                var mpManager = PlayFabMultiplayerManager.Get();
                 if(mpManager.IsNotInitializedState())
                 {
                     return true;
@@ -2652,10 +2730,13 @@ namespace PlayFab.Party
 
         private class InitPartyTask : WorkTask
         {
+            public InitPartyTask(PlayFabMultiplayerManager mpManager) : base(mpManager)
+            {
+            }
+
             public override bool Begin()
             {
                 GD.Print("Task: InitPartyTask()");
-                var mpManager = PlayFabMultiplayerManager.Get();
                 if(!mpManager.IsInitializedState())
                 {
                     mpManager._Initialize();
@@ -2666,7 +2747,6 @@ namespace PlayFab.Party
 
             public override bool Run()
             {
-                var mpManager = PlayFabMultiplayerManager.Get();
                 if(mpManager.IsInitializedState())
                 {
                     return true;
@@ -2683,7 +2763,7 @@ namespace PlayFab.Party
         {
             private string _networkId;
 
-            public JoinPartyTask(string networkId)
+            public JoinPartyTask(string networkId,  PlayFabMultiplayerManager mpManager) : base(mpManager)
             {
                 _networkId = networkId;
             }
@@ -2691,7 +2771,6 @@ namespace PlayFab.Party
             public override bool Begin()
             {
                 GD.Print("Task: JoinPartyTask");
-                var mpManager = PlayFabMultiplayerManager.Get();
                 if(!mpManager.IsConnectedToNetworkState())
                 {
                     mpManager.JoinNetwork(_networkId);
@@ -2702,7 +2781,6 @@ namespace PlayFab.Party
 
             public override bool Run()
             {
-                var mpManager = PlayFabMultiplayerManager.Get();
                 if(mpManager.IsConnectedToNetworkState())
                 {
                     return true;
