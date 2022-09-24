@@ -26,6 +26,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Godot;
 using PlayFab.Internal;
 using UnityEngine;
@@ -173,7 +174,7 @@ namespace PlayFab.Party
         /// <summary>
         /// Sends events to server.
         /// </summary>
-        public void DoWork()
+        public async Task DoWork()
         {
             if (PlayFabSettings.staticPlayer.IsClientLoggedIn())
             {
@@ -207,9 +208,19 @@ namespace PlayFab.Party
 
                         if (request.Events.Count > 0)
                         {
-#if !UNITY_EDITOR
-                            eventApi.WriteTelemetryEvents(request, EventSentSuccessfulCallback, EventSentErrorCallback);
-#endif
+                            // Only actually write events if not in the Editor
+                            if (!Engine.IsEditorHint())
+                            {
+                                var result = await eventApi.WriteTelemetryEventsAsync(request);
+                                if (result.Error != null)
+                                {
+                                    EventSentSuccessfulCallback(result.Result);
+                                }
+                                else
+                                {
+                                    EventSentErrorCallback(result.Error);
+                                }
+                            }
                         }
                     }
                 }
