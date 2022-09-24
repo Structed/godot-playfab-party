@@ -28,15 +28,22 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
+
+#if UNITY_2019_1_OR_NEWER
 using PlayFab.Internal;
 using UnityEngine;
+#endif
 
 namespace PlayFab.Party
 {
     /// <summary>
     /// This class is used to send telemetry events to the PlayFab service
     /// </summary>
+    #if UNITY_2019_1_OR_NEWER
     internal sealed class PlayFabEventTracer : SingletonMonoBehaviour<PlayFabEventTracer>
+    #else
+    internal sealed class PlayFabEventTracer
+    #endif
     {
         private Guid gameSessionID;
 
