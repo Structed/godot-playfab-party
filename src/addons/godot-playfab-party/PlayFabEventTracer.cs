@@ -26,6 +26,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Godot;
 using PlayFab.Internal;
 using UnityEngine;
 
@@ -60,12 +61,19 @@ namespace PlayFab.Party
         /// </summary>
         private void SetCommonTelemetryProperties(Dictionary<string, object> payload)
         {
-            payload["OSName"] = SystemInfo.operatingSystem;
-            payload["DeviceMake"] = SystemInfo.deviceName;
-            payload["DeviceModel"] = SystemInfo.deviceModel;
-            payload["Platform"] = Application.platform;
-            payload["AppName"] = Application.productName;
-            payload["AppVersion"] = Application.version;
+            const string versionSettingName = "application/version";
+            var version = "Unknown";
+            if (ProjectSettings.HasSetting(versionSettingName))
+            {
+                version = ProjectSettings.GetSetting(versionSettingName).ToString();
+            }
+
+            payload["OSName"] = OS.GetName();
+            payload["DeviceMake"] = System.Environment.MachineName;
+            payload["DeviceModel"] = OS.GetModelName();
+            payload["Platform"] = OS.GetName();
+            payload["AppName"] = ProjectSettings.GetSetting("application/config/name");
+            payload["AppVersion"] = version;
         }
 
         /// <summary>
@@ -95,8 +103,8 @@ namespace PlayFab.Party
             SetCommonTelemetryProperties(payload);
             payload["ClientInstanceId"] = gameSessionID;
             payload["PartyVersion"] = Version.PartyNativeVersion;
-            payload["PartyUnityVersion"] = Version.PartyUnityVersion;
-            payload["UnityVersion"] = Application.unityVersion;
+            payload["PartyGodotVersion"] = Version.PartyUnityVersion;
+            payload["GodotVersion"] = Engine.GetVersionInfo()["string"];
 
             eventInfo.Payload = payload;
             if(entityKey.Id == null)
@@ -223,7 +231,7 @@ namespace PlayFab.Party
         /// <param name="response">Server response</param>
         private void EventSentErrorCallback(PlayFabError response)
         {
-            Debug.LogWarning("Failed to send session data. Error: " + response.GenerateErrorReport());
+            GD.PushWarning("Failed to send session data. Error: " + response.GenerateErrorReport());
             // if we get APIClientRequestRateLimitExceeded then backoff and retry
             if(response.Error == PlayFabErrorCode.APIClientRequestRateLimitExceeded)
             {
