@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using Godot;
 using PartyCSharpSDK;
 using PartyXBLCSharpSDK;
 using PlayFab.ClientModels;
@@ -592,7 +593,7 @@ namespace PlayFab.Party
         {
             if (_logLevel != LogLevelType.None)
             {
-                Debug.LogError(message);
+                GD.PushError(message);
             }
         }
 
@@ -635,7 +636,7 @@ namespace PlayFab.Party
             {
                 return;
             }
-            Debug.LogWarning(warningMessage);
+            GD.PushWarning(warningMessage);
         }
 
         internal static void _LogInfo(string infoMessage)
@@ -644,7 +645,7 @@ namespace PlayFab.Party
             {
                 return;
             }
-            Debug.Log(infoMessage);
+            GD.Print(infoMessage);
         }
 
         internal bool _StartsWithSequence(byte[] buffer, byte[] sequence)
@@ -754,6 +755,7 @@ namespace PlayFab.Party
             InitializeImpl();
         }
 
+        // TODO: Adapt for Godot, if needed. Else, delete
 #if UNITY_EDITOR
         private void HandlePlayModeStateChanged(PlayModeStateChange args)
         {
@@ -786,6 +788,7 @@ namespace PlayFab.Party
                 _logLevel = LogLevelType.Minimal;
             }
 
+            // TODO: Adapt for Godot, if needed. Else, delete
 #if UNITY_EDITOR
             // We always clear the old party handle between play and pause to make sure
             // the developer is in a good state.
@@ -827,6 +830,7 @@ namespace PlayFab.Party
             _cachedSendMessageEndpointHandles = new List<PARTY_ENDPOINT_HANDLE[]>();
             _cachedSendMessageChatControlHandles = new List<PARTY_CHAT_CONTROL_HANDLE[]>();
 
+            // TODO: Likely not needed in the Godot context; assuming we use a global Singleton/Autoload
             if (!gameObjectPersisted)
             {
                 // On our first call we want to make sure we mark this game object with DontDestroyOnLoad so it
@@ -835,7 +839,7 @@ namespace PlayFab.Party
                 // The PlayFabMultiplayerManager is a singleton and exists across scenes for convenience.
 
                 gameObjectPersisted = true;
-                DontDestroyOnLoad(gameObject);
+                // DontDestroyOnLoad(gameObject);   // TODO: I think that's not needed in Godot
             }
             string titleId = PlayFabSettings.staticSettings.TitleId;
             if (string.IsNullOrEmpty(titleId))
@@ -1331,6 +1335,7 @@ namespace PlayFab.Party
         {
             _LogInfo("PlayFabMultiplayerManager:SetUserSettings()");
 
+            // TODO: Add case for Godot Editor. This should probably not get run there.
 #if (UNITY_GAMECORE || MICROSOFT_GAME_CORE) && !UNITY_EDITOR
             if (string.IsNullOrEmpty(LocalPlayer.PlatformSpecificUserId))
             {
@@ -2513,13 +2518,13 @@ namespace PlayFab.Party
 
         public void ResetParty()
         {
-            Debug.Log("ResetParty");
+            GD.Print("ResetParty");
             _tasks.Clear();
             _runningTask = null;
             var mpManager = PlayFabMultiplayerManager.Get();
             if(mpManager.IsNotInitializedState() || mpManager.IsPendingInitializationState())
             {
-                Debug.Log("No reinitialization required.");
+                GD.Print("No reinitialization required.");
                 return ;
             }
             if(_networkId != null && mpManager.IsConnectedToNetworkState())
@@ -2574,7 +2579,7 @@ namespace PlayFab.Party
         {
             public override bool Begin()
             {
-                Debug.Log("Task: LeaveNetworkTask");
+                GD.Print("Task: LeaveNetworkTask");
                 var mpManager = PlayFabMultiplayerManager.Get();
                 if(mpManager.IsConnectedToNetworkState())
                 {
@@ -2606,7 +2611,7 @@ namespace PlayFab.Party
         {
             public override bool Begin()
             {
-                Debug.Log("Task: CleanPartyTask");
+                GD.Print("Task: CleanPartyTask");
                 var mpManager = PlayFabMultiplayerManager.Get();
                 if(!mpManager.IsNotInitializedState())
                 {
@@ -2634,7 +2639,7 @@ namespace PlayFab.Party
         {
             public override bool Begin()
             {
-                Debug.Log("Task: InitPartyTask()");
+                GD.Print("Task: InitPartyTask()");
                 var mpManager = PlayFabMultiplayerManager.Get();
                 if(!mpManager.IsInitializedState())
                 {
@@ -2670,7 +2675,7 @@ namespace PlayFab.Party
 
             public override bool Begin()
             {
-                Debug.Log("Task: JoinPartyTask");
+                GD.Print("Task: JoinPartyTask");
                 var mpManager = PlayFabMultiplayerManager.Get();
                 if(!mpManager.IsConnectedToNetworkState())
                 {
