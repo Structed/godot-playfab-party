@@ -24,13 +24,11 @@
 
 #if !DISABLE_PLAYFABENTITY_API && !DISABLE_PLAYFABCLIENT_API
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
 
 #if UNITY_2019_1_OR_NEWER
-using PlayFab.Internal;
 using UnityEngine;
 #endif
 
