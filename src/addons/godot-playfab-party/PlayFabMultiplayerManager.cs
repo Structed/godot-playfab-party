@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Godot;
 using PartyCSharpSDK;
 using PartyXBLCSharpSDK;
@@ -935,7 +936,7 @@ namespace PlayFab.Party
             return partyNetworkDescriptor;
         }
 
-        private void ProcessQueuedOperations()
+        private async Task ProcessQueuedOperations()
         {
             if (_playFabMultiplayerManagerState <= _InternalPlayFabMultiplayerManagerState.NotInitialized)
             {
@@ -958,7 +959,15 @@ namespace PlayFab.Party
                         if (PlayFabAuthenticationAPI.IsEntityLoggedIn())
                         {
                             AuthenticationModels.GetEntityTokenRequest request = new AuthenticationModels.GetEntityTokenRequest();
-                            PlayFabAuthenticationAPI.GetEntityToken(request, GetEntityTokenCompleted, GetEntityTokenFailed);
+                            var result = await PlayFabAuthenticationAPI.GetEntityTokenAsync(request);
+                            if (result.Error == null)   // No error
+                            {
+                                GetEntityTokenCompleted(result.Result);
+                            }
+                            else
+                            {
+                                GetEntityTokenFailed(result.Error);
+                            }
                         }
                         else
                         {
