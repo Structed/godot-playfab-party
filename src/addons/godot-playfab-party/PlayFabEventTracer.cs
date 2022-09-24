@@ -216,7 +216,7 @@ namespace PlayFab.Party
                             if (!Engine.IsEditorHint())
                             {
                                 var result = await eventApi.WriteTelemetryEventsAsync(request);
-                                if (result.Error != null)
+                                if (result.Error == null)   // No error
                                 {
                                     EventSentSuccessfulCallback(result.Result);
                                 }
