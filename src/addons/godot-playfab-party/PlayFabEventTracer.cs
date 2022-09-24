@@ -89,7 +89,7 @@ namespace PlayFab.Party
         /// <summary>
         /// Queues the initialization event.
         /// </summary>
-        public void OnPlayFabMultiPlayerManagerInitialize()
+        public async Task OnPlayFabMultiPlayerManagerInitialize()
         {
             gameSessionID = Guid.NewGuid();
 
@@ -112,7 +112,7 @@ namespace PlayFab.Party
             {
                 eventsPending.Enqueue(eventInfo);
                 // we need to call this only once, during initialization, once logged in and entity has been retrieved, we will no longer call this.
-                StartCoroutine(WaitUntilEntityLoggedIn(delayBetweenEntityLoggedIn));
+                await WaitUntilEntityLoggedIn(delayBetweenEntityLoggedIn);
             }
             else
             {
@@ -124,19 +124,18 @@ namespace PlayFab.Party
         /// A coroutine to wait until we get an Entity Id after PlayFabLogin
         /// </summary>
         /// <param name="secondsBetweenWait">delay wait between checking whether Entity has logged in</param>
-        private IEnumerator WaitUntilEntityLoggedIn(float secondsBetweenWait)
+        private async Task WaitUntilEntityLoggedIn(float secondsBetweenWait) // TODO: param should potentially be int and mils? Unless we do not want to change API
         {
-            WaitForSeconds delay = new WaitForSeconds(secondsBetweenWait);
-
             while (entityKey.Id == null)
             {
+                await Task.Delay((int)(secondsBetweenWait * 1000));
+
                 if (PlayFabAuthenticationAPI.IsEntityLoggedIn())
                 {
-                    entityKey.Id = PlayFab.PlayFabSettings.staticPlayer.EntityId;
-                    entityKey.Type = PlayFab.PlayFabSettings.staticPlayer.EntityType;
+                    entityKey.Id = PlayFabSettings.staticPlayer.EntityId;
+                    entityKey.Type = PlayFabSettings.staticPlayer.EntityType;
                     break;
                 }
-                yield return delay;
             }
         }
 
