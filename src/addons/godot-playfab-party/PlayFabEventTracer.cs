@@ -255,6 +255,7 @@ namespace PlayFab.Party
             }
         }
 
+        #if UNITY_2019_1_OR_NEWER
         #region Unused MonoBehaviour compatibility  methods
         /// <summary>
         /// Unused
@@ -283,6 +284,7 @@ namespace PlayFab.Party
             // add code sending events on destroy
         }
         #endregion
+        #endif
     }
 }
 #endif
