@@ -37,7 +37,7 @@ project/assembly_name="godot-playfab-party"
 
 [editor_plugins]
 
-enabled=PackedStringArray()
+enabled=PackedStringArray("res://addons/godot-playfab/plugin.cfg")
 
 [rendering]
 
