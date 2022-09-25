@@ -2269,7 +2269,11 @@ namespace PlayFab.Party
                                         PlayFabPlayer newPlayer = GetPlayerByEntityId(newPlayerEntityId) as PlayFabPlayer;
                                         if (newPlayer == null)
                                         {
+                                            #if GODOT
+                                            newPlayer = new PlayFabPlayer(this);
+                                            #else
                                             newPlayer = new PlayFabPlayer();
+                                            #endif
                                             newPlayer._endPointHandle = newEndpoint;
                                             newPlayer._isLocal = isLocal;
                                             EntityKey newEntityKey = new EntityKey();
