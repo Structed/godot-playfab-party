@@ -1,0 +1,48 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqjt0yfjv4sy0"]
+
+[ext_resource type="Script" path="res://Scenes/Main.gd" id="1"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Main" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Register" type="Button" parent="Main"]
+layout_mode = 2
+offset_right = 72.0
+offset_bottom = 31.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+tooltip_text = "Register a new Player"
+disabled = true
+text = "Register"
+
+[node name="Login" type="Button" parent="Main"]
+layout_mode = 2
+offset_left = 76.0
+offset_right = 126.0
+offset_bottom = 31.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+tooltip_text = "Log in a Player"
+text = "Login"
+
+[connection signal="pressed" from="Main/Register" to="Main" method="_on_Register_pressed"]
+[connection signal="pressed" from="Main/Login" to="Main" method="_on_Login_pressed"]
