@@ -4,4 +4,9 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>godotplayfabparty</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="PartyCSharpSDK" Version="1.7.6-main.0" />
+    <PackageReference Include="PartyXboxLiveSDKCSharpSource" Version="1.7.6-main.0" />
+    <PackageReference Include="PlayFabAllSDK" Version="1.135.220908" />
+  </ItemGroup>
 </Project>

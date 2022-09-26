@@ -8,15 +8,36 @@
 
 config_version=5
 
+_global_script_classes=[{
+"base": "Object",
+"class": &"PlayFabConstants",
+"language": &"GDScript",
+"path": "res://addons/godot-playfab/Scripts/PlayFabConstants.gd"
+}, {
+"base": "Object",
+"class": &"test",
+"language": &"GDScript",
+"path": "res://addons/godot-playfab/Scripts/test.gd"
+}]
+_global_script_class_icons={
+"PlayFabConstants": "",
+"test": ""
+}
+
 [application]
 
 config/name="godot-playfab-party"
-config/features=PackedStringArray("4.0", "Vulkan Mobile")
+run/main_scene="res://Scenes/Main.tscn"
+config/features=PackedStringArray("4.0", "C#", "Vulkan Mobile")
 config/icon="res://icon.svg"
 
 [dotnet]
 
 project/assembly_name="godot-playfab-party"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot-playfab/plugin.cfg")
 
 [rendering]
 
