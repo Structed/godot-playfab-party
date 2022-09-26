@@ -139,11 +139,14 @@ namespace PlayFab.Party
 
         private bool gameObjectPersisted = false;
 
-        #if GODOT
-        public PlayFabMultiplayerManager()
+#if !UNITY_2019_1_OR_NEWER
+        public PlayFabMultiplayerManager(PlayFabEventsInstanceAPI eventsInstanceApi, PlayFabAuthenticationContext authenticationContext)
         {
-            eventTracer = new PlayFabEventTracer();
+            eventTracer = new PlayFabEventTracer(eventsInstanceApi, authenticationContext);
         }
+#endif
+
+#if GODOT
         public override void _Ready()
         {
             base._Ready();
@@ -166,11 +169,7 @@ namespace PlayFab.Party
                 {
                     _platformPolicyProvider.ProcessStateChanges();
                 }
-                #if GODOT
                 this.eventTracer.DoWork();
-#else
-                PlayFabEventTracer.instance.DoWork();
-#endif
             }
 
             if(HasTasks())
@@ -257,7 +256,7 @@ namespace PlayFab.Party
 
             return _multiplayerManager;
         }
-        #endif
+#endif
 
 
         //
@@ -889,7 +888,11 @@ namespace PlayFab.Party
                 TimeoutInMilliseconds = 0
             };
 
+#if UNITY_2019_1_OR_NEWER
             _localPlayer = new PlayFabLocalPlayer();
+#else
+            _localPlayer = new PlayFabLocalPlayer(this);
+#endif
             _remotePlayers = new List<PlayFabPlayer>();
             _partyStateChanges = new List<PARTY_STATE_CHANGE>();
             _cachedSendMessageEndpointHandles = new List<PARTY_ENDPOINT_HANDLE[]>();

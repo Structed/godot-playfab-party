@@ -55,12 +55,23 @@ namespace PlayFab.Party
         private long lastErrorTimeInMillisecond = GetCurrentTimeInMilliseconds();
         private int retryCount = 0;
 
-        private PlayFabEventsInstanceAPI eventApi;
+        #if !UNITY_2019_1_OR_NEWER
 
+        private PlayFabEventsInstanceAPI eventApi;
+        private readonly PlayFabAuthenticationContext authenticationContext;
+
+        public PlayFabEventTracer(PlayFabEventsInstanceAPI eventApi, PlayFabAuthenticationContext authenticationContext)
+        {
+            this.eventApi = eventApi;
+            this.authenticationContext = authenticationContext;
+        }
+        #else
         private PlayFabEventTracer()
         {
             eventApi = new PlayFabEventsInstanceAPI(PlayFabSettings.staticPlayer);
         }
+        #endif
+
 
         /// <summary>
         /// Sets common properties associated with all the events
@@ -135,12 +146,21 @@ namespace PlayFab.Party
             {
                 await Task.Delay((int)(secondsBetweenWait * 1000));
 
+                #if UNITY_2019_1_OR_NEWER
                 if (PlayFabAuthenticationAPI.IsEntityLoggedIn())
                 {
                     entityKey.Id = PlayFabSettings.staticPlayer.EntityId;
                     entityKey.Type = PlayFabSettings.staticPlayer.EntityType;
                     break;
                 }
+                #else
+                if (this.authenticationContext.IsClientLoggedIn())
+                {
+                    entityKey.Id = this.authenticationContext.EntityId;
+                    entityKey.Type = this.authenticationContext.EntityType;
+                    break;
+                }
+                #endif
             }
         }
 
@@ -180,7 +200,11 @@ namespace PlayFab.Party
         /// </summary>
         public async Task DoWork()
         {
+            #if UNITY_2019_1_OR_NEWER
             if (PlayFabSettings.staticPlayer.IsClientLoggedIn())
+            #else
+            if (this.authenticationContext.IsClientLoggedIn())
+            #endif
             {
                 // The events which are sent without login will only be in this queue intially.
                 // Once login is done, the count should always be 0.
