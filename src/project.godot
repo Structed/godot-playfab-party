@@ -40,6 +40,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 SceneManager="*res://Scripts/SceneManager.gd"
+PlayFabManager="*res://addons/godot-playfab/Scripts/PlayFabManager.cs"
 
 [dotnet]
 
@@ -47,7 +48,7 @@ project/assembly_name="godot-playfab-party"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot-playfab/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot-playfab-party/plugin.cfg", "res://addons/godot-playfab/plugin.cfg")
 
 [rendering]
 
