@@ -24,17 +24,24 @@
 
 #if !DISABLE_PLAYFABENTITY_API && !DISABLE_PLAYFABCLIENT_API
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using PlayFab.Internal;
+using System.Threading.Tasks;
+using Godot;
+
+#if UNITY_2019_1_OR_NEWER
 using UnityEngine;
+#endif
 
 namespace PlayFab.Party
 {
     /// <summary>
     /// This class is used to send telemetry events to the PlayFab service
     /// </summary>
+    #if UNITY_2019_1_OR_NEWER
     internal sealed class PlayFabEventTracer : SingletonMonoBehaviour<PlayFabEventTracer>
+    #else
+    internal sealed class PlayFabEventTracer
+    #endif
     {
         private Guid gameSessionID;
 
@@ -48,24 +55,42 @@ namespace PlayFab.Party
         private long lastErrorTimeInMillisecond = GetCurrentTimeInMilliseconds();
         private int retryCount = 0;
 
-        private PlayFabEventsInstanceAPI eventApi;
+        #if !UNITY_2019_1_OR_NEWER
 
+        private PlayFabEventsInstanceAPI eventApi;
+        private readonly PlayFabAuthenticationContext authenticationContext;
+
+        public PlayFabEventTracer(PlayFabEventsInstanceAPI eventApi, PlayFabAuthenticationContext authenticationContext)
+        {
+            this.eventApi = eventApi;
+            this.authenticationContext = authenticationContext;
+        }
+        #else
         private PlayFabEventTracer()
         {
             eventApi = new PlayFabEventsInstanceAPI(PlayFabSettings.staticPlayer);
         }
+        #endif
+
 
         /// <summary>
         /// Sets common properties associated with all the events
         /// </summary>
         private void SetCommonTelemetryProperties(Dictionary<string, object> payload)
         {
-            payload["OSName"] = SystemInfo.operatingSystem;
-            payload["DeviceMake"] = SystemInfo.deviceName;
-            payload["DeviceModel"] = SystemInfo.deviceModel;
-            payload["Platform"] = Application.platform;
-            payload["AppName"] = Application.productName;
-            payload["AppVersion"] = Application.version;
+            const string versionSettingName = "application/version";
+            var version = "Unknown";
+            if (ProjectSettings.HasSetting(versionSettingName))
+            {
+                version = ProjectSettings.GetSetting(versionSettingName).ToString();
+            }
+
+            payload["OSName"] = OS.GetName();
+            payload["DeviceMake"] = System.Environment.MachineName;
+            payload["DeviceModel"] = OS.GetModelName();
+            payload["Platform"] = OS.GetName();
+            payload["AppName"] = ProjectSettings.GetSetting("application/config/name");
+            payload["AppVersion"] = version;
         }
 
         /// <summary>
@@ -80,7 +105,7 @@ namespace PlayFab.Party
         /// <summary>
         /// Queues the initialization event.
         /// </summary>
-        public void OnPlayFabMultiPlayerManagerInitialize()
+        public async Task OnPlayFabMultiPlayerManagerInitialize()
         {
             gameSessionID = Guid.NewGuid();
 
@@ -95,15 +120,15 @@ namespace PlayFab.Party
             SetCommonTelemetryProperties(payload);
             payload["ClientInstanceId"] = gameSessionID;
             payload["PartyVersion"] = Version.PartyNativeVersion;
-            payload["PartyUnityVersion"] = Version.PartyUnityVersion;
-            payload["UnityVersion"] = Application.unityVersion;
+            payload["PartyGodotVersion"] = Version.PartyUnityVersion;
+            payload["GodotVersion"] = Engine.GetVersionInfo()["string"];
 
             eventInfo.Payload = payload;
             if(entityKey.Id == null)
             {
                 eventsPending.Enqueue(eventInfo);
                 // we need to call this only once, during initialization, once logged in and entity has been retrieved, we will no longer call this.
-                StartCoroutine(WaitUntilEntityLoggedIn(delayBetweenEntityLoggedIn));
+                await WaitUntilEntityLoggedIn(delayBetweenEntityLoggedIn);
             }
             else
             {
@@ -115,19 +140,27 @@ namespace PlayFab.Party
         /// A coroutine to wait until we get an Entity Id after PlayFabLogin
         /// </summary>
         /// <param name="secondsBetweenWait">delay wait between checking whether Entity has logged in</param>
-        private IEnumerator WaitUntilEntityLoggedIn(float secondsBetweenWait)
+        private async Task WaitUntilEntityLoggedIn(float secondsBetweenWait) // TODO: param should potentially be int and mils? Unless we do not want to change API
         {
-            WaitForSeconds delay = new WaitForSeconds(secondsBetweenWait);
-
             while (entityKey.Id == null)
             {
+                await Task.Delay((int)(secondsBetweenWait * 1000));
+
+                #if UNITY_2019_1_OR_NEWER
                 if (PlayFabAuthenticationAPI.IsEntityLoggedIn())
                 {
-                    entityKey.Id = PlayFab.PlayFabSettings.staticPlayer.EntityId;
-                    entityKey.Type = PlayFab.PlayFabSettings.staticPlayer.EntityType;
+                    entityKey.Id = PlayFabSettings.staticPlayer.EntityId;
+                    entityKey.Type = PlayFabSettings.staticPlayer.EntityType;
                     break;
                 }
-                yield return delay;
+                #else
+                if (this.authenticationContext.IsClientLoggedIn())
+                {
+                    entityKey.Id = this.authenticationContext.EntityId;
+                    entityKey.Type = this.authenticationContext.EntityType;
+                    break;
+                }
+                #endif
             }
         }
 
@@ -165,9 +198,13 @@ namespace PlayFab.Party
         /// <summary>
         /// Sends events to server.
         /// </summary>
-        public void DoWork()
+        public async Task DoWork()
         {
+            #if UNITY_2019_1_OR_NEWER
             if (PlayFabSettings.staticPlayer.IsClientLoggedIn())
+            #else
+            if (this.authenticationContext.IsClientLoggedIn())
+            #endif
             {
                 // The events which are sent without login will only be in this queue intially.
                 // Once login is done, the count should always be 0.
@@ -199,9 +236,19 @@ namespace PlayFab.Party
 
                         if (request.Events.Count > 0)
                         {
-#if !UNITY_EDITOR
-                            eventApi.WriteTelemetryEvents(request, EventSentSuccessfulCallback, EventSentErrorCallback);
-#endif
+                            // Only actually write events if not in the Editor
+                            if (!Engine.IsEditorHint())
+                            {
+                                var result = await eventApi.WriteTelemetryEventsAsync(request);
+                                if (result.Error == null)   // No error
+                                {
+                                    EventSentSuccessfulCallback(result.Result);
+                                }
+                                else
+                                {
+                                    EventSentErrorCallback(result.Error);
+                                }
+                            }
                         }
                     }
                 }
@@ -223,7 +270,7 @@ namespace PlayFab.Party
         /// <param name="response">Server response</param>
         private void EventSentErrorCallback(PlayFabError response)
         {
-            Debug.LogWarning("Failed to send session data. Error: " + response.GenerateErrorReport());
+            GD.PushWarning("Failed to send session data. Error: " + response.GenerateErrorReport());
             // if we get APIClientRequestRateLimitExceeded then backoff and retry
             if(response.Error == PlayFabErrorCode.APIClientRequestRateLimitExceeded)
             {
@@ -232,6 +279,7 @@ namespace PlayFab.Party
             }
         }
 
+        #if UNITY_2019_1_OR_NEWER
         #region Unused MonoBehaviour compatibility  methods
         /// <summary>
         /// Unused
@@ -260,6 +308,7 @@ namespace PlayFab.Party
             // add code sending events on destroy
         }
         #endregion
+        #endif
     }
 }
 #endif

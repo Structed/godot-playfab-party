@@ -9,6 +9,11 @@
 config_version=5
 
 _global_script_classes=[{
+"base": "Control",
+"class": &"LoggedIn",
+"language": &"GDScript",
+"path": "res://Scenes/LoggedIn.gd"
+}, {
 "base": "Object",
 "class": &"PlayFabConstants",
 "language": &"GDScript",
@@ -20,6 +25,7 @@ _global_script_classes=[{
 "path": "res://addons/godot-playfab/Scripts/test.gd"
 }]
 _global_script_class_icons={
+"LoggedIn": "",
 "PlayFabConstants": "",
 "test": ""
 }
@@ -31,13 +37,18 @@ run/main_scene="res://Scenes/Main.tscn"
 config/features=PackedStringArray("4.0", "C#", "Vulkan Mobile")
 config/icon="res://icon.svg"
 
+[autoload]
+
+SceneManager="*res://Scripts/SceneManager.gd"
+PlayFabManager="*res://addons/godot-playfab/Scripts/PlayFabManager.cs"
+
 [dotnet]
 
 project/assembly_name="godot-playfab-party"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot-playfab/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot-playfab-party/plugin.cfg", "res://addons/godot-playfab/plugin.cfg")
 
 [rendering]
 

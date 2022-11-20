@@ -23,7 +23,9 @@
  */
 
 using PartyCSharpSDK;
+#if (MICROSOFT_GAME_CORE || UNITY_GAMECORE) && !UNITY_EDITOR
 using PartyXBLCSharpSDK;
+#endif
 using PlayFab.ClientModels;
 
 namespace PlayFab.Party
@@ -33,6 +35,9 @@ namespace PlayFab.Party
     /// </summary>
     public class PlayFabPlayer
     {
+        #if GODOT
+        protected readonly PlayFabMultiplayerManager playFabMultiplayerManager;
+        #endif
         private ChatState _chatState;
         private float _voiceLevel;
         private bool _isMuted;
@@ -52,8 +57,13 @@ namespace PlayFab.Party
         /// <summary>
         /// Ctor
         /// </summary>
+#if UNITY_2019_1_OR_NEWER
         public PlayFabPlayer()
+#else
+        public PlayFabPlayer(PlayFabMultiplayerManager playFabMultiplayerManager)
+#endif
         {
+            this.playFabMultiplayerManager = playFabMultiplayerManager;
             _platformSpecificUserId = string.Empty;
             _mutedByPlatform = false;
         }
@@ -62,7 +72,7 @@ namespace PlayFab.Party
         {
             EntityKey = entityKey;
         }
-             
+
         /// <summary>
         /// Gets the visual chat state of this player for display in your game UI.
         /// </summary>
@@ -70,7 +80,9 @@ namespace PlayFab.Party
         {
             get
             {
+#if UNITY_2019_1_OR_NEWER
                 PlayFabMultiplayerManager playFabMultiplayerManager = PlayFabMultiplayerManager.Get();
+#endif
                 _chatState = playFabMultiplayerManager._GetChatState(EntityKey, _isLocal);
                 return _chatState;
             }
@@ -107,7 +119,9 @@ namespace PlayFab.Party
             }
             set
             {
+#if UNITY_2019_1_OR_NEWER
                 PlayFabMultiplayerManager playFabMultiplayerManager = PlayFabMultiplayerManager.Get();
+#endif
                 playFabMultiplayerManager._SetMuted(EntityKey, value, _isLocal);
                 _isMuted = value;
             }
@@ -120,7 +134,9 @@ namespace PlayFab.Party
         {
             get
             {
+#if UNITY_2019_1_OR_NEWER
                 PlayFabMultiplayerManager playFabMultiplayerManager = PlayFabMultiplayerManager.Get();
+#endif
                 if (_isLocal)
                 {
                     return _voiceLevel;
@@ -136,7 +152,9 @@ namespace PlayFab.Party
                 if (value >= 0 &&
                     value <= 1)
                 {
-                    PlayFabMultiplayerManager playFabMultiplayerManager = PlayFabMultiplayerManager.Get();
+#if UNITY_2019_1_OR_NEWER
+                PlayFabMultiplayerManager playFabMultiplayerManager = PlayFabMultiplayerManager.Get();
+#endif
                     playFabMultiplayerManager._SetVoiceLevel(EntityKey, value, _isLocal);
                     _voiceLevel = value;
                 }

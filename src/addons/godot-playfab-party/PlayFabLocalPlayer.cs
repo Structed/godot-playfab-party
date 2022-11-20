@@ -34,7 +34,11 @@ namespace PlayFab.Party
         /// <summary>
         /// Ctor
         /// </summary>
+#if !UNITY_2019_1_OR_NEWER
+        public PlayFabLocalPlayer(PlayFabMultiplayerManager multiplayerManager) : base(multiplayerManager)
+#else
         public PlayFabLocalPlayer()
+#endif
         {
             _isLocal = true;
         }
@@ -59,7 +63,9 @@ namespace PlayFab.Party
         {
             get
             {
+                #if UNITY_2019_1_OR_NEWER
                 PlayFabMultiplayerManager playFabMultiplayerManager = PlayFabMultiplayerManager.Get();
+                #endif
                 return playFabMultiplayerManager._GetLanguageCode(EntityKey, true);
             }
             set
